@@ -1,0 +1,38 @@
+Description: Downloads the latest version of the Visual Studio Code and creates a pkg.
+Identifier: com.local.salesloft.pkg.visualstudiocode
+ParentRecipe: com.local.salesloft.download.visualstudiocode
+MinimumVersion: "2.3"
+
+Input:
+  NAME: Visual Studio Code
+  BUNDLE_ID: com.microsoft.VSCode
+
+Process:
+  - Processor: PkgRootCreator
+    Arguments:
+      pkgdirs:
+        Applications: "0775"
+      pkgroot: "%RECIPE_CACHE_DIR%/%NAME%"
+
+  - Processor: Unarchiver
+    Arguments:
+      archive_path: "%pathname%"
+      destination_path: "%pkgroot%/Applications/"
+      purge_destination: "true"
+
+  - Processor: Versioner
+    Arguments:
+      input_plist_path: "%pkgroot%/Applications/Visual Studio Code.app/Contents/Info.plist"
+      plist_version_key: "CFBundleShortVersionString"
+
+  - Processor: PkgCreator
+    Arguments:
+      pkg_request:
+        chown:
+          - group: admin
+            path: Applications
+            user: root
+        id: "%BUNDLE_ID%"
+        options: purge_ds_store
+        pkgname: "%NAME%-%version%"
+        pkgdir: "%RECIPE_CACHE_DIR%"

@@ -1,0 +1,36 @@
+Comment: Downloads the latest version of the Okta Verify client, renames the package, uploads it to Jamf and modifies a smart group and policy.
+Identifier: com.local.salesloft.jamf.oktaverify
+ParentRecipe: com.local.salesloft.pkg.oktaverify
+MinimumVersion: '2.3'
+
+Input:
+  NAME: Okta Verify
+  CATEGORY: AutoPkg App Installers
+  GROUP_NAME: AutoPkg - Okta Verify Update
+  GROUP_TEMPLATE: AppInstallersSmartGroupTemplate.xml
+  TESTING_GROUP_NAME: AutoPkg - CorpTech Macs
+  POLICY_CATEGORY: AutoPkg App Installers
+  POLICY_NAME: Install %NAME%-%version%
+  POLICY_TEMPLATE: AppInstallerPolicyDisabledTemplate.xml
+  POLICY_TRIGGER: autoPKGOktaVerify
+  UPDATE_PREDICATE: pkg_uploaded == False
+
+Process:
+- Processor: com.github.grahampugh.jamf-upload.processors/JamfPackageUploader
+  Arguments:
+    pkg_category: '%CATEGORY%'
+
+- Processor: StopProcessingIf
+  Arguments:
+    predicate: '%UPDATE_PREDICATE%'
+
+- Processor: com.github.grahampugh.jamf-upload.processors/JamfComputerGroupUploader
+  Arguments:
+    computergroup_name: '%GROUP_NAME%'
+    computergroup_template: '%GROUP_TEMPLATE%'
+
+- Processor: com.github.grahampugh.jamf-upload.processors/JamfPolicyUploader
+  Arguments:
+    policy_name: '%POLICY_NAME%'
+    policy_template: '%POLICY_TEMPLATE%'
+    policy_trigger: '%POLICY_TRIGGER%'

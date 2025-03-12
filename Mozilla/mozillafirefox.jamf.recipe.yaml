@@ -1,0 +1,46 @@
+Comment: YAML recipe to upload Mozilla FireFox to Jamf.
+Identifier: com.local.salesloft.jamf.mozillafirefox
+ParentRecipe: com.local.salesloft.pkg.mozillafirefox
+MinimumVersion: '2.3'
+
+Input:
+  NAME: Mozilla Firefox
+  CATEGORY: AutoPkg App Installers
+  POLICY_CATEGORY: Applications
+  POLICY_NAME: Install %NAME%
+  POLICY_TEMPLATE: SelfServiceAllComputersEnabledTemplate.xml
+  POLICY_TRIGGER: autoPKGFireFox
+  SELF_SERVICE_DISPLAY_NAME: '%NAME%'
+  SELF_SERVICE_DESCRIPTION: |
+    ### Version of %NAME% to be installed: %version% 
+
+    **This version of %NAME% will work for both Intel and Apple Silicon Macs.**
+    
+    Firefox is a free, Open Source web browser developed by the Mozilla Foundation and Mozilla Corporation in 2004. The Firefox web browser can be used with Windows, Mac and Linux operating systems, as well as Android and iOS mobile devices. Firefox uses the Google search page as its homepage and default search engine.
+  SELF_SERVICE_ICON: '%NAME%.png'
+  UPDATE_PREDICATE: 'pkg_uploaded == False'
+  PKG_VERSIONS: '3'
+  PKG_NAME: 'Mozilla_Firefox'
+  PKG_NAME_LENGTH: '5'
+
+Process:
+- Processor: com.github.grahampugh.jamf-upload.processors/JamfPackageUploader
+  Arguments:
+    pkg_category: '%CATEGORY%'
+
+- Processor: StopProcessingIf
+  Arguments:
+    predicate: '%UPDATE_PREDICATE%'
+
+- Processor: com.github.grahampugh.jamf-upload.processors/JamfPolicyUploader
+  Arguments:
+    icon: '%SELF_SERVICE_ICON%'
+    policy_name: '%POLICY_NAME%'
+    policy_template: '%POLICY_TEMPLATE%'
+    replace_policy: "True"
+
+- Processor: com.github.grahampugh.jamf-upload.processors/JamfPackageCleaner
+  Arguments:
+    versions_to_keep: '%PKG_VERSIONS%'
+    pkg_name_match: '%PKG_NAME%'
+    minimum_name_length: '%PKG_NAME_LENGTH%'

@@ -1,0 +1,44 @@
+Comment: YAML recipe to upload Visual Studio Code client to Jamf.
+Identifier: com.local.salesloft.jamf.visualstudiocode
+ParentRecipe: com.local.salesloft.pkg.visualstudiocode
+MinimumVersion: '2.3'
+
+Input:
+  NAME: 'Visual Studio Code'
+  CATEGORY: AutoPkg App Installers
+  POLICY_CATEGORY: Applications
+  POLICY_NAME: Install %NAME%
+  POLICY_TEMPLATE: SelfServiceAllComputersEnabledTemplate.xml
+  POLICY_TRIGGER: autoPKGVSCode
+  SELF_SERVICE_DISPLAY_NAME: '%NAME%'
+  SELF_SERVICE_DESCRIPTION: |
+    Version of %NAME% to be installed: %version%
+    
+    Visual Studio Code is a source code editor which includes support for debugging, embedded Git control, syntax highlighting, intelligent code completion, snippets, and code refactoring.
+  SELF_SERVICE_ICON: '%NAME%.png'
+  UPDATE_PREDICATE: pkg_uploaded == False
+  PKG_VERSIONS: '3'
+  PKG_NAME: '%NAME%'
+  PKG_NAME_LENGTH: '5'
+
+Process:
+- Processor: com.github.grahampugh.jamf-upload.processors/JamfPackageUploader
+  Arguments:
+    pkg_category: '%CATEGORY%'
+
+- Processor: StopProcessingIf
+  Arguments:
+    predicate: '%UPDATE_PREDICATE%'
+
+- Processor: com.github.grahampugh.jamf-upload.processors/JamfPolicyUploader
+  Arguments:
+    icon: '%SELF_SERVICE_ICON%'
+    policy_name: '%POLICY_NAME%'
+    policy_template: '%POLICY_TEMPLATE%'
+    replace_policy: "True"
+
+- Processor: com.github.grahampugh.jamf-upload.processors/JamfPackageCleaner
+  Arguments:
+    versions_to_keep: '%PKG_VERSIONS%'
+    pkg_name_match: '%PKG_NAME%'
+    minimum_name_length: '%PKG_NAME_LENGTH%'

@@ -1,0 +1,31 @@
+Description: This recipe downloads the signed installer package that Mozilla made available starting in Firefox 69.0 and 68.1esr.
+Identifier: com.local.salesloft.download.mozillafirefox
+MinimumVersion: "2.3"
+
+Input:
+  LOCALE: en-US
+  NAME: FireFox
+  RELEASE_VERSION: LATEST_FIREFOX_VERSION
+  SEARCH_PATTERN: '"%RELEASE_VERSION%": "([\d\.abesr]+)"'
+
+Process:
+  - Processor: URLTextSearcher
+    Arguments:
+      re_pattern: "%SEARCH_PATTERN%"
+      result_output_var_name: version
+      url: https://product-details.mozilla.org/1.0/firefox_versions.json
+
+  - Processor: URLDownloader
+    Arguments:
+      filename: "%NAME%-%version%.pkg"
+      url: https://releases.mozilla.org/pub/firefox/releases/%version%/mac/%LOCALE%/Firefox%20%version%.pkg
+
+  - Processor: CodeSignatureVerifier
+    Arguments:
+      expected_authority_names:
+        - "Developer ID Installer: Mozilla Corporation (43AQ936H96)"
+        - Developer ID Certification Authority
+        - Apple Root CA
+      input_path: "%pathname%"
+
+  - Processor: EndOfCheckPhase

@@ -1,0 +1,40 @@
+Description: Downloads the latest version of the Okta Verify Client installer package and renames the package.
+Identifier: com.local.salesloft.pkg.oktaverify
+ParentRecipe: com.local.salesloft.download.oktaverify
+MinimumVersion: "2.3"
+
+Input:
+  NAME: OktaVerify
+
+Process:
+  - Processor: FlatPkgUnpacker
+    Arguments:
+      destination_path: "%RECIPE_CACHE_DIR%/unpack"
+      flat_pkg_path: "%pathname%"
+
+  - Processor: PkgPayloadUnpacker
+    Arguments:
+      destination_path: "%RECIPE_CACHE_DIR%/payload/Applications"
+      pkg_payload_path: "%RECIPE_CACHE_DIR%/unpack/Payload"
+
+  - Processor: Versioner
+    Arguments:
+      input_plist_path: "%RECIPE_CACHE_DIR%/payload/Applications/Okta Verify.app/Contents/Info.plist"
+      plist_version_key: CFBundleShortVersionString
+
+  - Processor: PlistReader
+    Arguments:
+      info_path: "%input_plist_path%"
+      plist_keys:
+        CFBundleVersion: ov_build
+
+  - Processor: PkgCopier
+    Arguments:
+      pkg_path: "%RECIPE_CACHE_DIR%/%NAME%-%version%.%ov_build%.pkg"
+      source_pkg: "%pathname%"
+
+  - Processor: PathDeleter
+    Arguments:
+      path_list:
+        - "%RECIPE_CACHE_DIR%/unpack"
+        - "%RECIPE_CACHE_DIR%/payload"

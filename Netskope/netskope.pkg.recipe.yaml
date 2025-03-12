@@ -1,0 +1,41 @@
+Description: Downloads the latest version of the Netskope Client installer package and renames the package.
+Identifier: com.local.salesloft.pkg.netskope
+ParentRecipe: com.local.salesloft.download.netskope
+MinimumVersion: "2.3"
+
+Input:
+  NAME: Netskope Client
+  PKG_NAME: NetskopeClient
+
+Process:
+  - Processor: FlatPkgUnpacker
+    Arguments:
+      destination_path: "%RECIPE_CACHE_DIR%/downloads/unpack"
+      flat_pkg_path: "%pathname%"
+
+  - Processor: PkgPayloadUnpacker
+    Arguments:
+      destination_path: "%RECIPE_CACHE_DIR%/downloads/payload"
+      pkg_payload_path: "%RECIPE_CACHE_DIR%/downloads/unpack/STAgent_unsigned.pkg/Payload"
+
+  - Processor: Versioner
+    Arguments:
+      input_plist_path: "%RECIPE_CACHE_DIR%/downloads/payload/%NAME%.app/Contents/Info.plist"
+      plist_version_key: CFBundleVersion
+
+  - Processor: PlistReader
+    Arguments:
+      info_path: "%input_plist_path%"
+      plist_keys:
+        LSMinimumSystemVersion: minimum_os_version
+
+  - Processor: PkgCopier
+    Arguments:
+      pkg_path: "%RECIPE_CACHE_DIR%/%NAME%-%version%.pkg"
+      source_pkg: "%pathname%"
+
+  - Processor: PathDeleter
+    Arguments:
+      path_list:
+        - "%RECIPE_CACHE_DIR%/downloads/unpack"
+        - "%RECIPE_CACHE_DIR%/downloads/payload"

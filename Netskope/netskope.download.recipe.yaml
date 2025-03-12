@@ -1,0 +1,24 @@
+Description: Downloads the latest version of the Netskope Client from the organizations tenant.  Create override and fill in ORGTENANT.
+Identifier: com.local.salesloft.download.netskope
+MinimumVersion: "2.3"
+
+Input:
+  NAME: Netskope Client
+  ORGTENANT: ''
+  PKG_NAME: NetskopeClient
+
+Process:
+  - Processor: URLDownloader
+    Arguments:
+      filename: "%PKG_NAME%.pkg"
+      url: "https://download-%ORGTENANT%/dlr/mac/get"
+
+  - Processor: CodeSignatureVerifier
+    Arguments:
+      expected_authority_names:
+        - "Developer ID Installer: netSkope, Inc. (24W52P9M7W)"
+        - Developer ID Certification Authority
+        - Apple Root CA
+      input_path: "%pathname%"
+
+  - Processor: EndOfCheckPhase

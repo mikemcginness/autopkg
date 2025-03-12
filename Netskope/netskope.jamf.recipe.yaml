@@ -1,0 +1,44 @@
+Comment: Downloads the latest version of the Netskope client, renames the package, uploads it to Jamf and modifies a smart group and policy.
+Identifier: com.local.salesloft.jamf.netskope
+ParentRecipe: com.local.salesloft.pkg.netskope
+MinimumVersion: '2.3'
+
+Input:
+  NAME: Netskope Client
+  CATEGORY: AutoPkg App Installers
+  POLICY_CATEGORY: AutoPkg App Installers
+  POLICY_NAME: Install %NAME%-%version%
+  POLICY_TEMPLATE: AppInstallerPolicyScriptParametersTemplate.xml
+  POLICY_TRIGGER: autoPKGNetskope
+  POLICY_SCRIPT_NAME: ''
+  POLICY_SCRIPT_PRIORITY: ''
+  POLICY_SCRIPT_PRAM04: ''
+  POLICY_SCRIPT_PRAM05: ''
+  POLICY_SCRIPT_PRAM06: ''
+  POLICY_SCRIPT_PRAM07: ''
+  POLICY_SCRIPT_PRAM08: ''
+  POLICY_SCRIPT_PRAM09: ''
+  POLICY_SCRIPT_PRAM10: ''
+  POLICY_SCRIPT_PRAM11: ''
+  UPDATE_PREDICATE: pkg_uploaded == False
+
+Process:
+- Processor: com.github.grahampugh.jamf-upload.processors/JamfPackageUploader
+  Arguments:
+    pkg_category: '%CATEGORY%'
+
+- Processor: com.github.grahampugh.jamf-upload.processors/JamfPolicyUploader
+  Arguments:
+    policy_name: '%POLICY_NAME%'
+    policy_template: '%POLICY_TEMPLATE%'
+    policy_trigger: '%POLICY_TRIGGER%'
+    policy_script_name: '%POLICY_SCRIPT_NAME%'
+    policy_script_priority: '%POLICY_SCRIPT_PRIORITY%'
+    policy_script_pram04: '%POLICY_SCRIPT_PRAM04%'
+    policy_script_pram05: '%POLICY_SCRIPT_PRAM05%'
+    policy_script_pram06: '%POLICY_SCRIPT_PRAM06%'
+    policy_script_pram07: '%POLICY_SCRIPT_PRAM07%'
+    policy_script_pram08: '%POLICY_SCRIPT_PRAM08%'
+    policy_script_pram09: '%POLICY_SCRIPT_PRAM09%'
+    policy_script_pram10: '%POLICY_SCRIPT_PRAM10%'
+    policy_script_pram11: '%POLICY_SCRIPT_PRAM11%'

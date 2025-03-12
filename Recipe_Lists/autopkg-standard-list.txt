@@ -1,0 +1,13 @@
+1password8.jamf.recipe.yaml
+displaylinkmanager.jamf.recipe.yaml
+googlechrome.jamf.recipe.yaml
+mozillafirefox.jamf.recipe.yaml
+netskope.jamf.recipe.yaml
+oktaverify.jamf.recipe.yaml
+slack.jamf.recipe.yaml
+zoom.jamf.recipe.yaml
+webex.jamf.intel.recipe.yaml
+webex.jamf.applesilicon.recipe.yaml
+rectangle.jamf.recipe.yaml
+visualstudiocode.jamf.recipe.yaml
+githubdesktop.jamf.universal.recipe.yaml

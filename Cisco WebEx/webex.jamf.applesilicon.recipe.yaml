@@ -1,0 +1,38 @@
+Comment: YAML recipe to upload WebEx client for Apple Silicon to Jamf.
+Identifier: com.local.salesloft.jamf.applesilicon.webex
+ParentRecipe: com.local.salesloft.pkg.applesilicon.webex
+MinimumVersion: '2.3'
+
+Input:
+  NAME: 'Cisco WebEx'
+  CATEGORY: AutoPkg App Installers
+  GROUP_NAME: macOS Inventory - Apple Silicon CPU
+  POLICY_CATEGORY: Applications
+  POLICY_NAME: Install %NAME%-arm64
+  POLICY_TEMPLATE: SelfServiceGroupEnabledTemplate.xml
+  POLICY_TRIGGER: autoPKGWebexAS
+  SELF_SERVICE_DISPLAY_NAME: '%NAME%'
+  SELF_SERVICE_DESCRIPTION: |
+    Version of %NAME% to be installed: %version%
+    
+    This version of Cisco WebEx is meant for Macs that have an Apple Silicon Processor. 
+    
+    Webex Meetings is Cisco's cloud-based web and video conferencing service that enables global and virtual teams to collaborate on mobile devices and standards-based video systems in real time. Webex Meetings includes features such as screen sharing, meeting recording, customizable layouts as well as meeting broadcasting.
+  SELF_SERVICE_ICON: '%NAME%.png'
+  UPDATE_PREDICATE: pkg_uploaded == False
+
+Process:
+- Processor: com.github.grahampugh.jamf-upload.processors/JamfPackageUploader
+  Arguments:
+    pkg_category: '%CATEGORY%'
+
+- Processor: StopProcessingIf
+  Arguments:
+    predicate: '%UPDATE_PREDICATE%'
+
+- Processor: com.github.grahampugh.jamf-upload.processors/JamfPolicyUploader
+  Arguments:
+    icon: '%SELF_SERVICE_ICON%'
+    policy_name: '%POLICY_NAME%'
+    policy_template: '%POLICY_TEMPLATE%'
+    replace_policy: "True"

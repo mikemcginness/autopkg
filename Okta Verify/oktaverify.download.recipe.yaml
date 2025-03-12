@@ -1,0 +1,29 @@
+Description: |
+  Downloads the latest version of the Okta Verify Client from the organizations tenant.
+  OKTA_DOMAIN: Usually "okta.com"
+  OKTA_ORG: Org tenant - "myorg" part of a subdomain like "myorg.okta.com"
+  OKTA_RELEASE_CHANNEL: GA or EA
+Identifier: com.local.salesloft.download.oktaverify
+MinimumVersion: "2.3"
+
+Input:
+  NAME: OktaVerify
+  OKTA_ORG: 'salesloft'
+  OKTA_DOMAIN: 'okta.com'
+  OKTA_RELEASE_CHANNEL: 'GA'
+
+Process:
+  - Processor: URLDownloader
+    Arguments:
+      filename: "%NAME%.pkg"
+      url: "https://%OKTA_ORG%.%OKTA_DOMAIN%/api/v1/artifacts/OKTA_VERIFY_MACOS/download?releaseChannel=%OKTA_RELEASE_CHANNEL%"
+
+  - Processor: CodeSignatureVerifier
+    Arguments:
+      expected_authority_names:
+        - "Developer ID Installer: Okta, Inc. (B7F62B65BN)"
+        - Developer ID Certification Authority
+        - Apple Root CA
+      input_path: "%pathname%"
+
+  - Processor: EndOfCheckPhase

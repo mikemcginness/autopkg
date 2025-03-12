@@ -1,0 +1,29 @@
+Comment: YAML recipe to upload SAP Privileges to Jamf
+Identifier: com.local.salesloft.jamf.privileges
+ParentRecipe: com.github.rtrouton.pkg.privileges
+MinimumVersion: '2.3'
+
+Input:
+  NAME: Privileges
+  CATEGORY: AutoPkg App Installers
+  POLICY_CATEGORY: AutoPkg App Installers
+  POLICY_NAME: Install %NAME%-%version%
+  POLICY_TEMPLATE: AppInstallerPolicyTemplate.xml
+  POLICY_TRIGGER: autoPKGPrivileges
+  UPDATE_PREDICATE: pkg_uploaded == False
+  SLACK_URL: ''
+
+Process:
+- Processor: com.github.grahampugh.jamf-upload.processors/JamfPackageUploader
+  Arguments:
+    pkg_category: '%CATEGORY%'
+
+- Processor: com.github.grahampugh.jamf-upload.processors/JamfPolicyUploader
+  Arguments:
+    policy_name: '%POLICY_NAME%'
+    policy_template: '%POLICY_TEMPLATE%'
+    policy_trigger: '%POLICY_TRIGGER%'
+
+- Processor: com.github.grahampugh.jamf-upload.processors/JamfUploaderSlacker
+  Arguments:
+    slack_webhook_url: '%SLACK_URL%'

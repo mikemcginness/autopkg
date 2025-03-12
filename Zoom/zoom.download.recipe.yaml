@@ -1,0 +1,25 @@
+Description: Downloads the latest version of Zoom.
+Identifier: com.local.salesloft.download.zoom
+MinimumVersion: "2.3"
+
+Input:
+  NAME: Zoom
+  DOWNLOADURL: https://zoom.us/client/latest/ZoomInstallerIT.pkg
+  USER_AGENT: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_8_3) AppleWebKit/536.28.10 (KHTML, like Gecko) Version/6.0.3 Safari/536.28.10
+
+Process:
+  - Processor: URLDownloader
+    Arguments:
+      filename: "%NAME%.pkg"
+      url: "%DOWNLOADURL%"
+      user-agent: "%USER_AGENT%"
+
+  - Processor: CodeSignatureVerifier
+    Arguments:
+      expected_authority_names:
+        - "Developer ID Installer: Zoom Video Communications, Inc. (BJ4HAAB9B3)"
+        - Developer ID Certification Authority
+        - Apple Root CA
+      input_path: "%pathname%"
+
+  - Processor: EndOfCheckPhase
